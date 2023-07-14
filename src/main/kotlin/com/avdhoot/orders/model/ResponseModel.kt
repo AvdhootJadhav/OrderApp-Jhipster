@@ -1,4 +1,6 @@
 package com.avdhoot.orders.model
 
-class ResponseModel {
-}
+data class ResponseModel(
+    var success: Boolean,
+    var message: String
+)

@@ -1,53 +1,41 @@
 package com.avdhoot.orders.web.rest
 
-import com.avdhoot.orders.security.getCurrentUserLogin
-import com.fasterxml.jackson.annotation.JsonCreator
-import org.slf4j.Logger
+import com.avdhoot.orders.entity.Order
+import com.avdhoot.orders.model.ResponseModel
+import com.avdhoot.orders.service.OrderService
 import org.slf4j.LoggerFactory
-import org.springframework.security.core.GrantedAuthority
-import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
-import javax.servlet.http.HttpServletRequest
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/orders")
 class AccountResource {
 
-    private val log = LoggerFactory.getLogger(javaClass)
+    @Autowired
+    private lateinit var orderService: OrderService
 
-    internal class AccountResourceException : RuntimeException()
+    private val logger = LoggerFactory.getLogger(javaClass)
 
-    /**
-     * {@code GET  /account} : get the current user.
-     *
-     * @return the current user.
-     * @throws AccountResourceException {@code 500 (Internal Server Error)} if the user couldn't be returned.
-     */
-    @GetMapping("/account")
-    fun getAccount(): UserVM {
-        val login = getCurrentUserLogin()
-            .orElseThrow { AccountResourceException() }
-        val authorities = SecurityContextHolder.getContext().authentication.authorities
-            .mapNotNullTo(mutableSetOf()) { it.authority }
-        return UserVM(login, authorities)
+    @PostMapping("/new")
+    fun saveOrder(@RequestBody order: Order): ResponseModel {
+        logger.debug(">>>>>\n${order.toString()}")
+        val response = orderService.saveOrder(order)
+        logger.debug(response.toString())
+        return response
     }
 
-    /**
-     * {@code GET  /authenticate} : check if the user is authenticated, and return its login.
-     *
-     * @param request the HTTP request.
-     * @return the login if the user is authenticated.
-     */
-    @GetMapping("/authenticate")
-    fun isAuthenticated(request: HttpServletRequest): String? {
-        log.debug("REST request to check if the current user is authenticated")
-        return request.remoteUser
+    @GetMapping("/all")
+    fun fetchOrders(): List<Order> {
+        return orderService.fetchOrders()
     }
 
-    data class UserVM @JsonCreator constructor(val login: String, val authorities: Set<String>) {
+    @DeleteMapping("/delete/{id}")
+    fun deleteOrder(@PathVariable("id") id: Int): ResponseModel {
+        return orderService.deleteOrder(id)
+    }
 
-        fun isActivated() = true
+    @PutMapping("/update")
+    fun updateOrder(@RequestBody order: Order): ResponseModel {
+        return orderService.updateOrder(order)
     }
 }

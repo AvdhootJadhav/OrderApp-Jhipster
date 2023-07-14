@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                              https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
@@ -62,7 +63,7 @@
         <checkstyle.version>10.3.2</checkstyle.version>
         <nohttp-checkstyle.version>0.0.10</nohttp-checkstyle.version>
         <git-commit-id-plugin.version>5.0.0</git-commit-id-plugin.version>
-        <modernizer-maven-plugin.version>2.4.0</modernizer-maven-plugin.version>
+        <modernizer-maven-plugin.version>2.6.0</modernizer-maven-plugin.version>
         <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
         <jib-maven-plugin.version>3.2.1</jib-maven-plugin.version>
         <jib-maven-plugin.image>eclipse-temurin:11-jre-focal</jib-maven-plugin.image>
@@ -71,14 +72,15 @@
         <properties-maven-plugin.version>1.1.0</properties-maven-plugin.version>
         <sonar-maven-plugin.version>3.9.1.2184</sonar-maven-plugin.version>
 
-        <kotlin.version>1.6.20</kotlin.version>
+        <kotlin.version>1.8.0</kotlin.version>
         <mapstruct.version>1.4.2.Final</mapstruct.version>
-        <ktlint-maven-plugin.version>1.13.0</ktlint-maven-plugin.version>
+        <ktlint-maven-plugin.version>1.16.0</ktlint-maven-plugin.version>
         <maven-antrun-plugin.version>3.0.0</maven-antrun-plugin.version>
         <detekt.version>1.19.0</detekt.version>
         <detekt.configFile>${project.basedir}/detekt-config.yml</detekt.configFile>
         <detekt.xmlReportFile>${project.build.directory}/detekt-reports/detekt.xml</detekt.xmlReportFile>
         <sonar.kotlin.detekt.reportPaths>${detekt.xmlReportFile}</sonar.kotlin.detekt.reportPaths>
+        <!--suppress UnresolvedMavenProperty -->
         <sonar.coverage.jacoco.xmlReportPaths>${jacoco.reportFolder}/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
         <!-- jhipster-needle-maven-property -->
     </properties>
@@ -149,6 +151,15 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-loader-tools</artifactId>
         </dependency>
         <dependency>
@@ -158,18 +169,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-logging</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-mail</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -183,11 +182,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -350,8 +344,8 @@
                                     <artifactId>mapstruct-processor</artifactId>
                                     <version>${mapstruct.version}</version>
                                 </annotationProcessorPath>
-                                
-                                
+
+
                             </annotationProcessorPaths>
                         </configuration>
                     </execution>
@@ -398,7 +392,7 @@
                         <artifactId>kotlin-maven-allopen</artifactId>
                         <version>${kotlin.version}</version>
                     </dependency>
-                    
+
                 </dependencies>
             </plugin>
             <plugin>
@@ -439,14 +433,14 @@
                 <groupId>com.github.gantsign.maven</groupId>
                 <artifactId>ktlint-maven-plugin</artifactId>
                 <version>${ktlint-maven-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>format</id>
-                        <goals>
-                            <goal>format</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <!--                <executions>-->
+                <!--                    <execution>-->
+                <!--                        <id>format</id>-->
+                <!--                        <goals>-->
+                <!--                            <goal>format</goal>-->
+                <!--                        </goals>-->
+                <!--                    </execution>-->
+                <!--                </executions>-->
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -624,7 +618,7 @@
                         </execution>
                     </executions>
                     <configuration>
-                      <javaVersion>${java.version}</javaVersion>
+                        <javaVersion>${java.version}</javaVersion>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -750,11 +744,15 @@
                     <configuration>
                         <rules>
                             <requireMavenVersion>
-                                <message>You are running an older version of Maven. JHipster requires at least Maven ${maven.version}</message>
+                                <message>You are running an older version of Maven. JHipster requires at least Maven
+                                    ${maven.version}
+                                </message>
                                 <version>[${maven.version},)</version>
                             </requireMavenVersion>
                             <requireJavaVersion>
-                                <message>You are running an incompatible version of Java. JHipster supports JDK 11 to 18.</message>
+                                <message>You are running an incompatible version of Java. JHipster supports JDK 11 to
+                                    18.
+                                </message>
                                 <version>[11,12),[12,13),[13,14),[14,15),[15,16),[16,17),[17,18),[18,19)</version>
                             </requireJavaVersion>
                         </rules>
@@ -822,7 +820,7 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
                     <version>${maven-jar-plugin.version}</version>
-               </plugin>
+                </plugin>
                 <plugin>
                     <groupId>org.sonarsource.scanner.maven</groupId>
                     <artifactId>sonar-maven-plugin</artifactId>
